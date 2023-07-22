@@ -36,8 +36,12 @@ img_suffix=".png"
 x="$2"
 y="$3"
 total_count=$(expr $x \* $y)
+
+# If scale is placed before tile, the parameters control the resolution of the small tiles;
+# if scale is placed after tile, the parameters control the resolution of the final composite image.And the padding/margin property in the tile may not be calculated correctly.
 margin=50
-tile="tile=${x}x${y}:padding=20:margin=$margin:color=gray,"
+padding=20
+tile="tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
 
 ## time watermark config
 draw_time="drawtext=text='%{pts\:hms}':fontsize=h/15:fontcolor=white:x=w/20:y=h/20,"
@@ -49,7 +53,6 @@ echo "$abs_video_file >>> [$x X $y = $total_count]"
 
 generate_tile_by_time() {
     out_img_name="$abs_video_file""_""$1"
-    rm -rf "$out_img_name"
     total_time=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$abs_video_file")
     # total_time=`ffprobe "$abs_video_file" -select_streams v -show_entries stream=duration -of default=nk=1:nw=1 -v quiet`
     chunk=$(echo "scale=2; $total_time / ($total_count + 1)" | bc)
@@ -57,7 +60,7 @@ generate_tile_by_time() {
         chunk=0.01
     fi
     echo "total_time: $total_time, chunk: $chunk"
-    ffmpeg_cmd="ffmpeg -i \"$abs_video_file\" ${img_limit} -vf \"select=(gte(t\,$chunk))*(isnan(prev_selected_t)+gte(t-prev_selected_t\,$chunk)),${draw_time} ${tile} ${scale}\" -fps_mode auto \"$out_img_name\""
+    ffmpeg_cmd="ffmpeg -y -i \"$abs_video_file\" ${img_limit} -vf \"select=(gte(t\,$chunk))*(isnan(prev_selected_t)+gte(t-prev_selected_t\,$chunk)),${draw_time} ${tile} ${scale}\" -fps_mode auto \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
@@ -109,8 +112,6 @@ time_format() {
 }
 generate_video_info() {
     out_img_name="$abs_video_file""_""$1"
-    rm -rf "$out_img_name"
-    # 获取视频文件信息
     info=$(ffprobe -v quiet -print_format json -show_format -show_streams "$abs_video_file")
     filename=$(echo "$info" | jq -r '.format.filename')
     size=$(echo "$info" | jq -r '.format.size')
@@ -130,7 +131,7 @@ Size: $size
 Resolution: ${width}x${height}
 duration: ${duration}
 EOF
-    ffmpeg_cmd="ffmpeg  -f lavfi -i color=gray:s=${img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin/2:y=h/4\" \"$out_img_name\""
+    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin/2:y=h/4\" \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
@@ -140,9 +141,7 @@ tile_merge_info() {
     file_info="$abs_video_file""_""$2"
     file_merge="$abs_video_file""_""$3"
 
-    rm -rf "$file_merge"
-
-    ffmpeg_cmd="ffmpeg -i \"$file_img\" -i \"$file_info\" -update 1 -frames:v 1 -filter_complex \"[0:v]pad=iw:ih+$info_height+1:0:$info_height:color=white[top]; [top][1:v]overlay=0:0\" \"$file_merge\""
+    ffmpeg_cmd="ffmpeg -y -i \"$file_img\" -i \"$file_info\" -update 1 -frames:v 1 -filter_complex \"[0:v]pad=iw:ih+$info_height+1:0:$info_height:color=white[top]; [top][1:v]overlay=0:0\" \"$file_merge\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
