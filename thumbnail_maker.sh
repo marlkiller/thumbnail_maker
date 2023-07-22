@@ -30,6 +30,8 @@ img_limit="-frames:v 1 -update 1"
 ffmpeg_out=""
 #ffmpeg_out=">> ffmpeg.out.log 2>&1"
 
+img_suffix=".jpg"
+
 ## tile config
 x="$2"
 y="$3"
@@ -46,7 +48,7 @@ info_height=130
 echo "$abs_video_file >>> [$x X $y = $total_count]"
 
 generate_tile_by_time() {
-    out_img_name="$abs_video_file""_""$1".png
+    out_img_name="$abs_video_file""_""$1"
     rm -rf "$out_img_name"
     total_time=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$abs_video_file")
     # total_time=`ffprobe "$abs_video_file" -select_streams v -show_entries stream=duration -of default=nk=1:nw=1 -v quiet`
@@ -106,7 +108,7 @@ time_format() {
     echo $size
 }
 generate_video_info() {
-    out_img_name="$abs_video_file""_""$1".png
+    out_img_name="$abs_video_file""_""$1"
     rm -rf "$out_img_name"
     # 获取视频文件信息
     info=$(ffprobe -v quiet -print_format json -show_format -show_streams "$abs_video_file")
@@ -134,24 +136,24 @@ EOF
 }
 
 tile_merge_info() {
-    file_img="$abs_video_file""_""$1".png
-    file_info="$abs_video_file""_""$2".png
-    file_merge="$abs_video_file""_""$3".png
+    file_img="$abs_video_file""_""$1"
+    file_info="$abs_video_file""_""$2"
+    file_merge="$abs_video_file""_""$3"
 
     rm -rf "$file_merge"
 
-    ffmpeg_cmd="ffmpeg -i \"$file_img\" -i \"$file_info\" -update 1 -frames:v 1 -filter_complex \"[0:v]pad=iw:ih+$info_height:0:$info_height:color=white[top]; [top][1:v]overlay=0:0\" \"$file_merge\""
+    ffmpeg_cmd="ffmpeg -i \"$file_img\" -i \"$file_info\" -update 1 -frames:v 1 -filter_complex \"[0:v]pad=iw:ih+$info_height+1:0:$info_height:color=white[top]; [top][1:v]overlay=0:0\" \"$file_merge\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
 
 start_time=$(date +%s.%N)
 
-generate_tile_by_time "time_2"
+generate_tile_by_time "time_2${img_suffix}"
 
-generate_video_info "info"
+generate_video_info "info${img_suffix}"
 
-tile_merge_info "time_2" "info" "merge"
+tile_merge_info "time_2${img_suffix}" "info${img_suffix}" "merge${img_suffix}"
 
 end_time=$(date +%s.%N)
 duration=$(echo "$end_time - $start_time" | bc)
