@@ -30,7 +30,7 @@ img_limit="-frames:v 1 -update 1"
 ffmpeg_out=""
 #ffmpeg_out=">> ffmpeg.out.log 2>&1"
 
-img_suffix=".jpg"
+img_suffix=".png"
 
 ## tile config
 x="$2"
