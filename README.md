@@ -42,3 +42,9 @@ In this example, "4 5" splits each input stream into 4 rows and 5 columns, resul
 ## How it works?
 
 TODO
+
+# Supported Platform
+
+- Mac OS
+- Linux
+- ~~Windows (TODO)~~
