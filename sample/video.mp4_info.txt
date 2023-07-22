@@ -1,0 +1,4 @@
+Filename: video.mp4
+Size: 1.07 MB
+Resolution: 960x540
+duration: 1.05 Min
