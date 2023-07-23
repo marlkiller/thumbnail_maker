@@ -29,6 +29,9 @@ img_limit="-frames:v 1 -update 1"
 #ffmpeg_out=""
 ffmpeg_out=">> ffmpeg.out.log 2>&1"
 
+# If the watermark text is garbled, set the font file path here and end with ":"
+# eg font_file="fontfile=/System/Library/Fonts/Supplemental/Arial Unicode.ttf:"
+font_file=""
 img_suffix=".jpg"
 
 ## tile config
@@ -49,7 +52,7 @@ tile="${scale} tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
 #tile="tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,${scale}"
 
 ## time watermark config
-draw_time="drawtext=text='%{pts\:hms}':fontsize=h/15:fontcolor=white:x=w/20:y=h/20,"
+draw_time="drawtext=${font_file}text='%{pts\:hms}':fontsize=h/15:fontcolor=white:x=w/20:y=h/20,"
 
 ## Head info config
 info_height=140
@@ -136,7 +139,7 @@ Size: $size
 Resolution: ${width}x${height}
 duration: ${duration}
 EOF
-    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${composite_img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=trunc((h-text_h+$margin)/2)\" \"$out_img_name\""
+    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${composite_img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=${font_file}textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=trunc((h-text_h+$margin)/2)\" \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
