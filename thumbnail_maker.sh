@@ -5,7 +5,7 @@
 param_count=$#
 if [ $param_count -lt 3 ]; then
     echo "Error: Need at least 3 parameters"
-    echo "Usage: $0 sample/video.mp4 4 5"
+    echo "Usage: sh $0 sample/video.mp4 4 5"
     exit 1
 fi
 
