@@ -15,7 +15,6 @@ This project is a command-line tool that generates x*y thumbnails for a given vi
 
 # Prerequisites
 - ffmpeg
-- jq
 
 To use this tool, you need to have ffmpeg installed on your system. You can install it by following the instructions on the [official website ↗.](https://ffmpeg.org/download.html)
 

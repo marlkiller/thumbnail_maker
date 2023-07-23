@@ -1,22 +1,23 @@
 #!/bin/bash
-# Usage : sh thumbnail_maker.sh /Users/voidm/Downloads/one-piece.E0162.mkv 3 4
+# Usage :
+# sh thumbnail_maker.sh sample/video.mp4 4 5
 
 param_count=$#
 if [ $param_count -lt 3 ]; then
     echo "Error: Need at least 3 parameters"
-    echo "Usage: $0 video.mp4 3 4"
+    echo "Usage: $0 sample/video.mp4 4 5"
     exit 1
 fi
 
-if ! command -v ffmpeg &>/dev/null; then
+command -v ffmpeg >/dev/null 2>&1 || {
     echo "Please install ffmpeg first"
-    exit 1
-fi
+    exit 1;
+}
 
-if ! command -v jq &>/dev/null; then
-    echo "Please install jq first."
-    exit 1
-fi
+#command -v jq >/dev/null 2>&1 || {
+#    echo "Please install jq first"
+#    exit 1;
+#}
 
 echo "Processing $0 $1 $2"
 
@@ -121,11 +122,19 @@ time_format() {
 generate_video_info() {
     out_img_name="$abs_video_file""_""$1"
     info=$(ffprobe -v quiet -print_format json -show_format -show_streams "$abs_video_file")
-    filename=$(echo "$info" | jq -r '.format.filename')
-    size=$(echo "$info" | jq -r '.format.size')
-    duration=$(echo "$info" | jq -r '.format.duration')
-    width=$(echo "$info" | jq -r '.streams[0].width')
-    height=$(echo "$info" | jq -r '.streams[0].height')
+    # filename=$(echo "$info" | jq -r '.format.filename')
+    # size=$(echo "$info" | jq -r '.format.size')
+    # duration=$(echo "$info" | jq -r '.format.duration')
+    # width=$(echo "$info" | jq -r '.streams[0].width')
+    # height=$(echo "$info" | jq -r '.streams[0].height')
+
+    filename=$(echo "$info" | grep -o '"filename":[^,}]*' | cut -d '"' -f 4)
+    size=$(echo "$info" | grep -o '"size":[^,}]*' | cut -d '"' -f 4)
+    duration=$(echo "$info" | grep -o '"duration":[^,}]*' | tail -n 1 | cut -d '"' -f 4)
+    width=$(echo "$info" | grep -o '"width":[^,}]*' | sed 's/.* //g'| cut -d ':' -f 2)
+    height=$(echo "$info" | grep -o '"height":[^,}]*' | sed 's/.* //g'| cut -d ':' -f 2)
+
+    echo "video_info: "$filename,$size,$duration,$width,$height
 
     size=$(size_format $size)
     int_duration=${duration%.*}
