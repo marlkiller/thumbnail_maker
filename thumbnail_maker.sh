@@ -52,7 +52,7 @@ tile="${scale} tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
 draw_time="drawtext=text='%{pts\:hms}':fontsize=h/15:fontcolor=white:x=w/20:y=h/20,"
 
 ## Head info config
-info_height=130
+info_height=140
 
 echo "$abs_video_file >>> [$x X $y = $total_count]"
 
@@ -136,7 +136,7 @@ Size: $size
 Resolution: ${width}x${height}
 duration: ${duration}
 EOF
-    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${composite_img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=h/4\" \"$out_img_name\""
+    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${composite_img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=trunc((h-text_h+$margin)/2)\" \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
