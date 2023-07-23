@@ -24,13 +24,12 @@ abs_video_file="$1"
 video_name=$(basename "$abs_video_file")
 
 # ffmpeg config
-img_width=2048
-scale="scale=$img_width:-1,"
+composite_img_width=2048
 img_limit="-frames:v 1 -update 1"
-ffmpeg_out=""
-#ffmpeg_out=">> ffmpeg.out.log 2>&1"
+#ffmpeg_out=""
+ffmpeg_out=">> ffmpeg.out.log 2>&1"
 
-img_suffix=".png"
+img_suffix=".jpg"
 
 ## tile config
 x="$2"
@@ -41,7 +40,13 @@ total_count=$(expr $x \* $y)
 # if scale is placed after tile, the parameters control the resolution of the final composite image.And the padding/margin property in the tile may not be calculated correctly.
 margin=50
 padding=20
-tile="tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
+
+tile_img_width=$(echo "($composite_img_width - ($padding * ($x-1)) - ($margin * 2)) / $x" | bc)
+scale="scale=$tile_img_width:-1,"
+tile="${scale} tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
+
+#scale="scale=$composite_img_width:-1,"
+#tile="tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,${scale}"
 
 ## time watermark config
 draw_time="drawtext=text='%{pts\:hms}':fontsize=h/15:fontcolor=white:x=w/20:y=h/20,"
@@ -60,7 +65,7 @@ generate_tile_by_time() {
         chunk=0.01
     fi
     echo "total_time: $total_time, chunk: $chunk"
-    ffmpeg_cmd="ffmpeg -y -i \"$abs_video_file\" ${img_limit} -vf \"select=(gte(t\,$chunk))*(isnan(prev_selected_t)+gte(t-prev_selected_t\,$chunk)),${draw_time} ${tile} ${scale}\" -fps_mode auto \"$out_img_name\""
+    ffmpeg_cmd="ffmpeg -y -i \"$abs_video_file\" ${img_limit} -vf \"select=(gte(t\,$chunk))*(isnan(prev_selected_t)+gte(t-prev_selected_t\,$chunk)),${draw_time} ${tile} \" -fps_mode auto \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
@@ -131,7 +136,7 @@ Size: $size
 Resolution: ${width}x${height}
 duration: ${duration}
 EOF
-    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin/2:y=h/4\" \"$out_img_name\""
+    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${composite_img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=h/4\" \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
