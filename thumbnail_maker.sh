@@ -13,6 +13,10 @@ command -v ffmpeg >/dev/null 2>&1 || {
     echo "Please install ffmpeg first"
     exit 1;
 }
+command -v ffprobe >/dev/null 2>&1 || {
+    echo "Please install ffprobe first"
+    exit 1;
+}
 
 #command -v jq >/dev/null 2>&1 || {
 #    echo "Please install jq first"
