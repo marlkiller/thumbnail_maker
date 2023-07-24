@@ -49,12 +49,12 @@ total_count=$(expr $x \* $y)
 margin=50
 padding=20
 
-tile_img_width=$(echo "($composite_img_width - ($padding * ($x-1)) - ($margin * 2)) / $x" | bc)
-scale="scale=$tile_img_width:-1,"
-tile="${scale} tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
+#tile_img_width=$(echo "($composite_img_width - ($padding * ($x-1)) - ($margin * 2)) / $x" | bc)
+#scale="scale=$tile_img_width:-1,"
+#tile="${scale} tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,"
 
-#scale="scale=$composite_img_width:-1,"
-#tile="tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,${scale}"
+scale="scale=$composite_img_width:-1,"
+tile="tile=${x}x${y}:padding=$padding:margin=$margin:color=gray,${scale}"
 
 ## time watermark config
 draw_time="drawtext=${font_file}text='%{pts\:hms}':fontsize=h/15:fontcolor=white:x=w/20:y=h/20,"
