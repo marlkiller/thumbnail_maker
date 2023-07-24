@@ -26,7 +26,11 @@ To use this tool, you need to have ffmpeg installed on your system. You can inst
 git clone github.com/marlkiller/thumbnail_maker
 cd thumbnail_maker
 
+# Mac/Linux
 sh thumbnail_maker.sh sample/video.mp4 4 5
+
+# Windows
+.\thumbnail_maker.bat sample\video.mp4 3 4
 ```
 
 
@@ -46,4 +50,4 @@ TODO
 
 - Mac OS
 - Linux
-- ~~Windows (TODO)~~
+- Windows
