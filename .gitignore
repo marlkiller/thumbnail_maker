@@ -1,0 +1,13 @@
+# Distribution / packaging
+.Python
+./build/*
+dist/
+
+# Environments
+.env
+
+.idea
+/.vscode
+
+.DS_Store
+__pycache__
