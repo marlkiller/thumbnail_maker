@@ -125,6 +125,7 @@ time_format() {
 }
 generate_video_info() {
     out_img_name="$abs_video_file""_""$1"
+    out_tile_img_name="$abs_video_file""_""$2"
     info=$(ffprobe -v quiet -print_format json -show_format -show_streams "$abs_video_file")
     # filename=$(echo "$info" | jq -r '.format.filename')
     # size=$(echo "$info" | jq -r '.format.size')
@@ -152,7 +153,9 @@ Size: $size
 Resolution: ${width}x${height}
 duration: ${duration}
 EOF
-    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${composite_img_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=${font_file}textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=trunc((h-text_h+$margin)/2)\" \"$out_img_name\""
+
+    ret_width=`ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$out_tile_img_name"`
+    ffmpeg_cmd="ffmpeg -y -f lavfi -i color=gray:s=${ret_width}x${info_height}:d=1 -update 1  -filter:v  \"drawtext=${font_file}textfile='$text_tile':fontsize=24:fontcolor=white:x=$margin:y=trunc((h-text_h+$margin)/2)\" \"$out_img_name\""
     echo $ffmpeg_cmd
     eval "$ffmpeg_cmd $ffmpeg_out"
 }
@@ -171,7 +174,7 @@ start_time=$(date +%s.%N)
 
 generate_tile_by_time "time_2${img_suffix}"
 
-generate_video_info "info${img_suffix}"
+generate_video_info "info${img_suffix}" "time_2${img_suffix}"
 
 tile_merge_info "time_2${img_suffix}" "info${img_suffix}" "merge${img_suffix}"
 
