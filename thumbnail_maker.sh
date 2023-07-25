@@ -89,11 +89,9 @@ size_format() {
         elif [ 1073741824 -gt $total_size ]; then
             size=$(echo "scale=2; a = $total_size / 1048576 ; if (length(a)==scale(a)) print 0;print a" | bc)
             size="$size MB"
-        elif [ 1073741824 -le $total_size ]; then
+        else
             size=$(echo "scale=2; a = $total_size / 1073741824 ; if (length(a)==scale(a)) print 0;print a" | bc)
             size="$size GB"
-        else
-            size="0"
         fi
     else
         size="NULL"
@@ -109,20 +107,19 @@ time_format() {
         elif [ 3600 -gt $total_size ]; then
             size=$(echo "scale=2; a = $total_size / 60 ; if (length(a)==scale(a)) print 0;print a" | bc)
             size="$size Min"
-        elif [ 216000 -gt $total_size ]; then
+        elif [ 86400 -gt $total_size ]; then
             size=$(echo "scale=2; a = $total_size / 3600 ; if (length(a)==scale(a)) print 0;print a" | bc)
             size="$size Hour"
-        elif [ 5184000 -le $total_size ]; then
-            size=$(echo "scale=2; a = $total_size / 216000 ; if (length(a)==scale(a)) print 0;print a" | bc)
-            size="$size Day"
         else
-            size="0"
+            size=$(echo "scale=2; a = $total_size / 86400 ; if (length(a)==scale(a)) print 0;print a" | bc)
+            size="$size Day"
         fi
     else
         size="NULL"
     fi
     echo $size
 }
+
 generate_video_info() {
     out_img_name="$abs_video_file""_""$1"
     out_tile_img_name="$abs_video_file""_""$2"
