@@ -54,8 +54,8 @@ for %%i in ("%abs_video_file%") do set "video_name=%%~nxi"
 @REM rem ffmpeg config
 set composite_img_width=2048
 set img_limit=-frames:v 1 -update 1
-@REM rem set ffmpeg_out=
-set ffmpeg_out=^>^> ffmpeg.out.log 2^>^&1
+rem set ffmpeg_out=
+@REM set ffmpeg_out=^>^> ffmpeg.out.log 2^>^&1
 
 @REM rem If the watermark text is garbled, set the font file path here and end with ":"
 @REM rem eg font_file="fontfile=/System/Library/Fonts/Supplemental/Arial Unicode.ttf:"

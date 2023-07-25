@@ -31,8 +31,8 @@ video_name=$(basename "$abs_video_file")
 # ffmpeg config
 composite_img_width=2048
 img_limit="-frames:v 1 -update 1"
-#ffmpeg_out=""
-ffmpeg_out=">> ffmpeg.out.log 2>&1"
+ffmpeg_out=""
+#ffmpeg_out=">> ffmpeg.out.log 2>&1"
 
 # If the watermark text is garbled, set the font file path here and end with ":"
 # eg font_file="fontfile=/System/Library/Fonts/Supplemental/Arial Unicode.ttf:"
