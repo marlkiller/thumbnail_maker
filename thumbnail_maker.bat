@@ -134,6 +134,8 @@ if !num!==3 (set duration=%%i)
 for /f "tokens=2 delims=:, " %%i in ('type info_json.txt ^| findstr \"width\"') do set "width=%%~i"
 for /f "tokens=2 delims=:, " %%i in ('type info_json.txt ^| findstr \"height\"') do set "height=%%~i"
 
+rem call :time_format %duration%
+
 echo video_info: %filename%,%size%,%duration%,%width%,%height%
 
 set "out_info_txt_name=%abs_video_file%_info%img_suffix%.txt"
@@ -179,4 +181,11 @@ set /A mill=time_end_mill-time_begin_mill
 echo %time_begin% - %time_end%
 echo "[%video_name%] Command take %minute%:%second%:%mill% to execute."
 
+goto:end
 
+
+:time_format
+echo TODO
+goto:eof
+
+:end
